@@ -74,9 +74,9 @@ restaurar_respaldo () {
     else
         sudo -u postgresql psql -c "create database $bddDestino"
     fi
-    if [ -f "$respaldorRestaurar" ]; then
+    if [ -f "$1/$respaldorRestaurar" ]; then
         echo "restaurando respaldo...."
-        sudo -u postgres pg_restore -Fc -d $bddDestino "$directorioBackup/$respaldoRestaurar"
+        sudo -u postgres pg_restore -Fc -d $bddDestino "$1/$respaldoRestaurar"
         echo "Listar la base de datos"
         sudo -u postgres psql -c "\l"
     else
