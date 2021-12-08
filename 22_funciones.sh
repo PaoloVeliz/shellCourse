@@ -62,6 +62,27 @@ obtener_respaldo () {
 }
 restaurar_respaldo () {
     echo -e "\nInicio de restauracion...."
+    read -p "Ingresar el directorio donde estan los respaldos:" directorioBackup
+    ls -la $directorioBackup
+    read -p "Elegir el respaldo a restaurar" respaldoRestaurar
+    echo -e "\n"
+    read -p "Ingrese el nombre de la base de datos destino" bddDestino
+    #verificar si la bdd existe
+    verifyBdd=$(sudo -u postgres psql lqt | cut-d \| -f l \ grep -wq $bddDestino)
+    if [ $? -eq 0 ]; then
+        echo "restaurando en la base de datos destino: $bddDestino"
+    else
+        sudo -u postgresql psql -c "create database $bddDestino"
+    fi
+    if [ -f "$respaldorRestaurar" ]; then
+        echo "restaurando respaldo...."
+        sudo -u postgres pg_restore -Fc -d $bddDestino "$directorioBackup/$respaldoRestaurar"
+        echo "Listar la base de datos"
+        sudo -u postgres psql -c "\l"
+    else
+        echo "El respaldo $respaldoRestaurar no existe"
+    fi
+    read -n 1 -s -r -p "PRESIONE [ENTER] para continuar...."
 }
 #Declaracion del menu
 while :
